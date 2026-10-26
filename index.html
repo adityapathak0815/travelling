@@ -1,0 +1,3041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Aura Luxury Expeditions &mdash; Earth Odyssey</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400;1,600;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'Space Grotesk', monospace;
+      --font-editorial: 'Cormorant Garamond', Georgia, serif;
+      --font-wide: 'Syne', 'Space Grotesk', sans-serif;
+      --card-border: rgba(255, 255, 255, 0.13);
+      --card-glass: rgba(255, 255, 255, 0.02);
+      --accent-gold: #f59e0b;
+      --accent-amber: #fbbf24;
+      --accent-glow: rgba(251, 191, 36, 0.35);
+    }
+
+    html, body {
+      width: 100%;
+      background: #000;
+      color: #fff;
+      font-family: var(--font-body);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Fixed full screen viewer */
+    #viewport {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      background: #000;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .cinematic-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(0, 0, 0, 0.04) 0%, rgba(0, 0, 0, 0.6) 100%),
+                  linear-gradient(180deg, rgba(0,0,0,0.55) 0%, transparent 22%, transparent 78%, rgba(0,0,0,0.7) 100%);
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Scroll proxy (1485 frames space) */
+    #scroll-proxy {
+      width: 100%;
+      height: calc(100vh + 24000px);
+    }
+
+    /* ── FULLY TRANSPARENT AURA EXPEDITIONS NAVIGATION HEADER ── */
+    #aura-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      z-index: 40;
+      padding: 16px max(20px, 3.5vw);
+      background: rgba(255, 255, 255, 0.02) !important;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      transition: all 0.3s ease;
+    }
+
+    .header-inner {
+      max-width: 1520px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    /* Zone 1: Wordmark + Left-Aligned "Begin Your Journey" + Scene Tracker */
+    .brand-zone {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      text-decoration: none;
+    }
+
+    .aura-logo {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      text-decoration: none;
+      color: #fff;
+    }
+
+    .aura-brand-italic {
+      font-family: var(--font-editorial);
+      font-style: italic;
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: #fbbf24;
+      text-shadow: 0 0 18px rgba(251, 191, 36, 0.5);
+      line-height: 1;
+    }
+
+    .aura-brand-bold {
+      font-family: var(--font-wide);
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.95);
+      transform: scaleY(0.92);
+      line-height: 1;
+    }
+
+    /* Left-Aligned "Begin Your Journey" at the Header */
+    .header-journey-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .journey-pipe {
+      color: rgba(255, 255, 255, 0.25);
+      font-weight: 300;
+    }
+
+    .header-journey-title {
+      font-family: var(--font-wide);
+      font-weight: 800;
+      font-size: 11.5px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: transparent !important;
+      -webkit-text-fill-color: transparent;
+      background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.9) 45%, rgba(251, 191, 36, 0.85) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      text-align: left;
+      transform: scaleY(0.92);
+      transform-origin: left center;
+      white-space: nowrap;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+    }
+
+    @media (max-width: 768px) {
+      .header-journey-wrap { display: none; }
+    }
+
+    /* Scene 1 & 2 Active Indicator */
+    .scene-live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.9);
+      transition: all 0.3s ease;
+    }
+
+    .scene-live-pill.highlight {
+      border-color: rgba(251, 191, 36, 0.45);
+      background: rgba(251, 191, 36, 0.08);
+      box-shadow: 0 0 16px rgba(251, 191, 36, 0.2);
+    }
+
+    .status-pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+      animation: pulseGlow 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    /* Zone 2: Navigation Links */
+    .nav-zone {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    @media (max-width: 1140px) {
+      .nav-zone { display: none; }
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: rgba(255, 255, 255, 0.8);
+      font-family: var(--font-body);
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 4px;
+      transition: color 0.2s ease;
+      text-decoration: none;
+    }
+
+    .nav-btn:hover, .nav-btn.active {
+      color: #fbbf24;
+    }
+
+    .nav-chevron {
+      width: 12px;
+      height: 12px;
+      transition: transform 0.25s ease;
+    }
+
+    .nav-btn.active .nav-chevron {
+      transform: rotate(180deg);
+    }
+
+    /* Zone 3: Actions (Search, Currency, Planner CTA) */
+    .actions-zone {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .search-trigger-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 7px 12px;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .search-trigger-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.25);
+      color: #fff;
+    }
+
+    .kbd-badge {
+      background: rgba(255, 255, 255, 0.1);
+      font-family: var(--font-mono);
+      font-size: 9px;
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Currency Dropdown */
+    .currency-wrap {
+      position: relative;
+    }
+
+    .currency-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 7px 11px;
+      color: rgba(255, 255, 255, 0.85);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .currency-btn:hover {
+      border-color: rgba(251, 191, 36, 0.4);
+      color: #fbbf24;
+    }
+
+    .currency-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: rgba(10, 14, 24, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 6px;
+      min-width: 140px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+      display: none;
+      flex-direction: column;
+      gap: 2px;
+      z-index: 60;
+    }
+
+    .currency-menu.open {
+      display: flex;
+    }
+
+    .currency-option {
+      background: transparent;
+      border: none;
+      padding: 7px 10px;
+      border-radius: 6px;
+      color: rgba(255, 255, 255, 0.8);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .currency-option:hover, .currency-option.active {
+      background: rgba(251, 191, 36, 0.12);
+      color: #fbbf24;
+    }
+
+    /* Primary Action CTA */
+    .cta-plan-btn {
+      background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+      color: #0b0f19;
+      font-family: var(--font-wide);
+      font-weight: 800;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 8px 18px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(251, 191, 36, 0.3);
+      white-space: nowrap;
+      transform: scaleY(0.95);
+    }
+
+    .cta-plan-btn:hover {
+      transform: scaleY(0.95) translateY(-1px);
+      box-shadow: 0 6px 20px rgba(251, 191, 36, 0.45);
+      filter: brightness(1.08);
+    }
+
+    /* Mobile Hamburger */
+    .mobile-menu-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      padding: 6px;
+    }
+
+    @media (max-width: 1140px) {
+      .mobile-menu-btn { display: flex; }
+      .search-trigger-btn span { display: none; }
+      .kbd-badge { display: none; }
+    }
+
+    /* ── AURA EXPEDITIONS MEGA MENUS ── */
+    .mega-menu-container {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      width: 100%;
+      background: rgba(8, 12, 22, 0.95);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+      padding: 28px max(24px, 5vw);
+      display: none;
+      animation: fadeInDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 55;
+    }
+
+    .mega-menu-container.open {
+      display: block;
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .mega-inner {
+      max-width: 1360px;
+      margin: 0 auto;
+    }
+
+    .mega-tabs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 14px;
+      margin-bottom: 22px;
+      overflow-x: auto;
+    }
+
+    .mega-tab {
+      background: transparent;
+      border: 1px solid transparent;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .mega-tab:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .mega-tab.active {
+      color: #fbbf24;
+      background: rgba(251, 191, 36, 0.1);
+      border-color: rgba(251, 191, 36, 0.3);
+    }
+
+    .mega-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .mega-cards-grid { grid-template-columns: 1fr; }
+    }
+
+    .mega-dest-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mega-dest-card:hover {
+      border-color: rgba(251, 191, 36, 0.4);
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+    }
+
+    .mega-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      font-family: var(--font-mono);
+    }
+
+    .mega-card-title {
+      font-family: var(--font-editorial);
+      font-size: 22px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+
+    .mega-card-desc {
+      font-size: 12px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .mega-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 10px;
+    }
+
+    .price-tag {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: #fbbf24;
+    }
+
+    /* Progress bar */
+    #progress-line-wrap {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.06);
+      z-index: 30;
+    }
+
+    #progress-line {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #6366f1, #a855f7, #fbbf24);
+      box-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
+      border-radius: 0 2px 2px 0;
+    }
+
+    /* Scroll Indicator */
+    #scroll-indicator {
+      position: fixed;
+      bottom: max(20px, env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      z-index: 25;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    #scroll-indicator.hidden {
+      opacity: 0;
+    }
+
+    .indicator-text {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.75);
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+    }
+
+    .mouse-icon {
+      width: 16px;
+      height: 26px;
+      border: 1.5px solid rgba(255, 255, 255, 0.4);
+      border-radius: 9px;
+      position: relative;
+    }
+
+    .mouse-wheel {
+      width: 2px;
+      height: 5px;
+      background: #fbbf24;
+      border-radius: 2px;
+      position: absolute;
+      top: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: wheelMove 1.6s infinite ease-in-out;
+    }
+
+    @keyframes wheelMove {
+      0% { opacity: 0; transform: translate(-50%, 0); }
+      30% { opacity: 1; }
+      100% { opacity: 0; transform: translate(-50%, 9px); }
+    }
+
+    /* ── DUAL MOVING TRANSPARENT CARDS STAGE (ONE LEFT, ONE RIGHT, MOVING WITH SCROLL) ── */
+    #story-stage {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      pointer-events: none;
+      z-index: 10;
+      overflow: hidden;
+    }
+
+    /* Fully Transparent Cards: Dynamic Scroll Parallax Elements */
+    .story-card-left, .story-card-right {
+      position: absolute;
+      top: 50%;
+      width: clamp(310px, 35vw, 480px);
+      max-height: calc(100vh - 140px);
+      overflow-y: auto;
+      scrollbar-width: none;
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.02) !important;
+      backdrop-filter: blur(14px) !important;
+      -webkit-backdrop-filter: blur(14px) !important;
+      border: 1px solid rgba(255, 255, 255, 0.13) !important;
+      border-radius: 20px !important;
+      padding: 22px 26px !important;
+      box-shadow: 0 16px 44px rgba(0, 0, 0, 0.4), inset 0 0 1px 1px rgba(255, 255, 255, 0.16) !important;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+      will-change: transform, opacity;
+      filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.8));
+      text-align: left;
+      align-items: flex-start;
+    }
+
+    .story-card-left::-webkit-scrollbar, .story-card-right::-webkit-scrollbar {
+      display: none;
+    }
+
+    .story-card-left {
+      left: max(22px, 3.8vw);
+    }
+
+    .story-card-right {
+      right: max(22px, 3.8vw);
+    }
+
+    .story-card-left:hover, .story-card-right:hover {
+      background: rgba(255, 255, 255, 0.045) !important;
+      border-color: rgba(251, 191, 36, 0.4) !important;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 0 2px rgba(255, 255, 255, 0.25) !important;
+    }
+
+    /* ── RESPONSIVE DESIGN SYSTEM: TABLETS & LAPTOPS (769px - 1080px) ── */
+    @media (max-width: 1080px) and (min-width: 769px) {
+      .story-card-left, .story-card-right {
+        width: clamp(310px, 44vw, 420px) !important;
+        max-height: calc(100vh - 160px) !important;
+        max-height: calc(100dvh - 160px) !important;
+        padding: 18px 22px !important;
+      }
+      .story-card-left { left: 20px !important; }
+      .story-card-right { right: 20px !important; }
+      .opening-editorial-header {
+        left: 24px !important;
+        width: clamp(330px, 52vw, 560px) !important;
+      }
+      .mega-cards-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+      }
+    }
+
+    /* ── RESPONSIVE DESIGN SYSTEM: MOBILE DEVICES (<= 768px) ── */
+    @media (max-width: 768px) {
+      #aura-header {
+        padding: 9px 14px !important;
+      }
+      .header-inner {
+        gap: 8px !important;
+      }
+      .aura-logo {
+        gap: 5px !important;
+      }
+      .aura-brand-italic {
+        font-size: 21px !important;
+      }
+      .aura-brand-bold {
+        font-size: 10.5px !important;
+        letter-spacing: 0.14em !important;
+      }
+      .header-journey-wrap {
+        display: none !important;
+      }
+      .scene-live-pill {
+        padding: 3px 8px !important;
+        font-size: 8.5px !important;
+        letter-spacing: 0.08em !important;
+      }
+      .status-pulse-dot {
+        width: 5px !important;
+        height: 5px !important;
+      }
+      .search-trigger-btn {
+        padding: 6px 9px !important;
+        border-radius: 7px !important;
+      }
+      .currency-btn {
+        padding: 6px 8px !important;
+        font-size: 10px !important;
+        border-radius: 7px !important;
+      }
+      .mobile-menu-btn {
+        padding: 6px !important;
+      }
+
+      /* Both cards comfortably positioned to leave central 3D corridor visible */
+      .story-card-left, .story-card-right {
+        width: calc(100% - 24px) !important;
+        left: 12px !important;
+        right: 12px !important;
+        padding: 12px 14px !important;
+        border-radius: 16px !important;
+        gap: 8px !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6), inset 0 0 1px 1px rgba(255, 255, 255, 0.18) !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        touch-action: pan-y !important;
+      }
+      .story-card-left {
+        top: 25% !important;
+        max-height: 35vh !important;
+        max-height: 35dvh !important;
+      }
+      .story-card-right {
+        top: 75% !important;
+        max-height: 35vh !important;
+        max-height: 35dvh !important;
+      }
+
+      /* Compact Typography on Mobile */
+      .card-header {
+        margin-bottom: 6px !important;
+        gap: 3px !important;
+      }
+      .micro-kicker {
+        font-size: 9.5px !important;
+        letter-spacing: 0.16em !important;
+      }
+      .hero-title {
+        font-size: clamp(18px, 5.2vw, 23px) !important;
+        line-height: 1.08 !important;
+      }
+      .massive-wide-title {
+        font-size: clamp(20px, 5.8vw, 26px) !important;
+        line-height: 1.05 !important;
+        margin: 1px 0 3px 0 !important;
+      }
+      .micro-sub {
+        font-size: 9px !important;
+      }
+      .card-middle {
+        gap: 6px !important;
+        margin-bottom: 4px !important;
+      }
+      .card-paragraph {
+        font-size: 12px !important;
+        line-height: 1.45 !important;
+      }
+      .stats-row {
+        gap: 5px !important;
+      }
+      .stat-chip {
+        padding: 5px 6px !important;
+        border-radius: 9px !important;
+        gap: 2px !important;
+      }
+      .stat-val {
+        font-size: 12px !important;
+      }
+      .stat-lbl {
+        font-size: 8px !important;
+      }
+      .transparent-note-card {
+        padding: 5px 8px !important;
+        border-radius: 8px !important;
+        gap: 6px !important;
+      }
+      .note-badge {
+        font-size: 8px !important;
+      }
+      .note-text {
+        font-size: 10.5px !important;
+        line-height: 1.35 !important;
+      }
+      .left-action-bar {
+        gap: 6px !important;
+        margin-top: 4px !important;
+      }
+      .btn-action-primary, .btn-action-secondary {
+        padding: 8px 14px !important;
+        font-size: 10px !important;
+        border-radius: 8px !important;
+      }
+      .mini-dest-list {
+        gap: 5px !important;
+        margin: 3px 0 !important;
+      }
+      .mini-dest-item {
+        padding: 7px 10px !important;
+        border-radius: 9px !important;
+      }
+      .card-footer {
+        padding-top: 6px !important;
+        gap: 4px !important;
+      }
+      .footer-left, .footer-nav {
+        font-size: 9px !important;
+      }
+      .glowing-creator-pill {
+        padding: 7px 14px !important;
+        gap: 6px !important;
+        max-width: calc(100vw - 24px) !important;
+      }
+      .glowing-creator-text {
+        font-size: 9.5px !important;
+        letter-spacing: 0.08em !important;
+      }
+
+      /* Opening Editorial Header on Mobile */
+      .opening-editorial-header {
+        top: 48% !important;
+        left: 12px !important;
+        width: calc(100% - 24px) !important;
+        max-height: 80vh !important;
+        max-height: 80dvh !important;
+        gap: 8px !important;
+      }
+      .opening-giant-title {
+        font-size: clamp(30px, 8.8vw, 52px) !important;
+        line-height: 0.98 !important;
+        margin: 1px 0 4px 0 !important;
+      }
+      .opening-narrative {
+        font-size: 12.5px !important;
+        line-height: 1.5 !important;
+        max-width: 100% !important;
+      }
+
+      /* Modals on Mobile */
+      .modal-backdrop {
+        padding: 12px !important;
+      }
+      .modal-window {
+        padding: 20px 16px !important;
+        border-radius: 16px !important;
+        max-height: 88vh !important;
+        max-height: 88dvh !important;
+        overflow-y: auto !important;
+      }
+      .modal-close-btn {
+        top: 14px !important;
+        right: 14px !important;
+        width: 36px !important;
+        height: 36px !important;
+      }
+      .modal-title {
+        font-size: 22px !important;
+      }
+      .form-input, .form-select {
+        font-size: 16px !important;
+        padding: 10px 12px !important;
+      }
+      .form-row {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+      }
+
+      /* Mega Menus on Mobile */
+      .mega-menu-container {
+        padding: 20px 14px !important;
+        max-height: calc(100vh - 65px) !important;
+        max-height: calc(100dvh - 65px) !important;
+        overflow-y: auto !important;
+      }
+      .mega-cards-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+      }
+    }
+
+    /* ── RESPONSIVE DESIGN SYSTEM: COMPACT MOBILE (<= 640px) ── */
+    @media (max-width: 640px) {
+      #aura-header .header-inner .cta-plan-btn {
+        display: none !important;
+      }
+    }
+
+    /* ── RESPONSIVE DESIGN SYSTEM: SMALL PHONES (<= 420px) ── */
+    @media (max-width: 420px) {
+      .aura-brand-bold {
+        display: none !important;
+      }
+      .story-card-left {
+        top: 24% !important;
+        max-height: 34vh !important;
+        max-height: 34dvh !important;
+      }
+      .story-card-right {
+        top: 76% !important;
+        max-height: 34vh !important;
+        max-height: 34dvh !important;
+      }
+    }
+
+    /* ── OPENING EDITORIAL HEADER (NOT A CARD, LEFT-ALIGNED, BIGGER FONT, REMAINS AT START) ── */
+    .opening-editorial-header {
+      position: absolute;
+      top: 50%;
+      left: max(24px, 4.5vw);
+      transform: translateY(-50%);
+      width: clamp(340px, 46vw, 760px);
+      max-height: calc(100vh - 130px);
+      background: transparent !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      border: none !important;
+      border-radius: 0 !important;
+      padding: 0 !important;
+      box-shadow: none !important;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      text-align: left;
+      align-items: flex-start;
+      z-index: 15;
+      will-change: transform, opacity;
+      pointer-events: auto;
+      filter: drop-shadow(0 14px 36px rgba(0, 0, 0, 0.9));
+    }
+
+    .opening-giant-title {
+      font-family: var(--font-wide);
+      font-weight: 800;
+      font-size: clamp(42px, 6.4vw, 84px);
+      line-height: 0.98;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transform: scaleY(0.88);
+      transform-origin: left center;
+      text-align: left;
+      color: transparent !important;
+      -webkit-text-fill-color: transparent;
+      background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.96) 45%, rgba(251, 191, 36, 0.85) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-stroke: 1.1px rgba(255, 255, 255, 0.65);
+      text-shadow: 0 6px 36px rgba(0, 0, 0, 0.9);
+      margin: 2px 0 6px 0;
+    }
+
+    .opening-narrative {
+      font-size: clamp(14px, 1.15vw, 16px);
+      line-height: 1.66;
+      color: rgba(255, 255, 255, 0.92);
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+      max-width: 580px;
+      text-align: left;
+    }
+
+    /* CARD HEADER TYPOGRAPHY (Bold, Wide Larger, Shorter Height, Left-Aligned) */
+    .card-header {
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: left;
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .micro-kicker {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #fbbf24 !important;
+      text-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
+      text-align: left;
+    }
+
+    /* Perfect Font Style: Bold with Wide Larger and Height Shorter (Left Aligned) */
+    .hero-title {
+      font-family: var(--font-wide);
+      font-weight: 800;
+      font-size: clamp(24px, 3.2vw, 38px);
+      line-height: 1.05;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transform: scaleY(0.90);
+      transform-origin: left center;
+      text-align: left;
+      color: transparent !important;
+      -webkit-text-fill-color: transparent;
+      background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.92) 50%, rgba(200, 220, 255, 0.5) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-stroke: 0.75px rgba(255, 255, 255, 0.5);
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.7);
+    }
+
+    .massive-wide-title {
+      font-family: var(--font-wide);
+      font-weight: 800;
+      font-size: clamp(28px, 4.2vw, 48px);
+      line-height: 1.02;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transform: scaleY(0.88);
+      transform-origin: left center;
+      text-align: left;
+      color: transparent !important;
+      -webkit-text-fill-color: transparent;
+      background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.95) 45%, rgba(251, 191, 36, 0.8) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-stroke: 0.85px rgba(255, 255, 255, 0.55);
+      text-shadow: 0 6px 30px rgba(0, 0, 0, 0.9);
+      margin: 2px 0 6px 0;
+    }
+
+    .micro-sub {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.75) !important;
+      text-align: left;
+    }
+
+    .card-middle {
+      margin-bottom: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      text-align: left;
+      align-items: flex-start;
+    }
+
+    .card-paragraph {
+      font-size: clamp(13px, 1.05vw, 14.5px);
+      line-height: 1.62;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.92);
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+      text-align: left;
+    }
+
+    .card-paragraph strong {
+      color: #fff;
+      font-weight: 700;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    /* Transparent telemetry chips at middle */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      width: 100%;
+    }
+
+    .stat-chip {
+      background: rgba(255, 255, 255, 0.03) !important;
+      backdrop-filter: blur(12px) !important;
+      -webkit-backdrop-filter: blur(12px) !important;
+      border: 1px solid rgba(255, 255, 255, 0.13) !important;
+      border-radius: 12px !important;
+      padding: 8px 10px !important;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), inset 0 0 1px rgba(255, 255, 255, 0.15) !important;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      text-align: center;
+      align-items: center;
+      transition: all 0.25s ease;
+    }
+
+    .stat-chip:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.06) !important;
+      border-color: rgba(251, 191, 36, 0.4) !important;
+    }
+
+    .stat-val {
+      font-family: var(--font-wide);
+      font-size: clamp(13px, 1.2vw, 16px);
+      font-weight: 700;
+      color: #fff;
+      transform: scaleY(0.92);
+      white-space: nowrap;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+    }
+
+    .stat-lbl {
+      font-family: var(--font-mono);
+      font-size: 9.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(255, 255, 255, 0.65);
+    }
+
+    /* Sub-card note for telemetry / field insights */
+    .transparent-note-card {
+      background: rgba(255, 255, 255, 0.02) !important;
+      backdrop-filter: blur(10px) !important;
+      -webkit-backdrop-filter: blur(10px) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      border-radius: 10px !important;
+      padding: 8px 12px !important;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: inset 0 0 1px rgba(255, 255, 255, 0.15) !important;
+      width: 100%;
+    }
+
+    .note-badge {
+      font-family: var(--font-mono);
+      font-size: 8.5px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #fbbf24 !important;
+      text-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .note-text {
+      font-size: 11.5px;
+      line-height: 1.45;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .card-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .footer-left {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .footer-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #fbbf24;
+    }
+
+    /* Curated Itinerary Teasers */
+    .mini-dest-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      margin: 6px 0;
+    }
+
+    .mini-dest-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .mini-dest-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(251, 191, 36, 0.4);
+      transform: translateX(3px);
+    }
+
+    /* Left-Aligned Action Bar */
+    .left-action-bar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+      width: 100%;
+    }
+
+    .btn-action-primary {
+      background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+      color: #080d1a;
+      font-family: var(--font-wide);
+      font-weight: 800;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(251, 191, 36, 0.35);
+      transform: scaleY(0.92);
+      transition: all 0.2s ease;
+    }
+
+    .btn-action-primary:hover {
+      transform: scaleY(0.92) translateY(-1px);
+      box-shadow: 0 10px 24px rgba(251, 191, 36, 0.5);
+      filter: brightness(1.1);
+    }
+
+    .btn-action-secondary {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(12px);
+      color: #fff;
+      font-family: var(--font-wide);
+      font-weight: 700;
+      font-size: 10.5px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      transform: scaleY(0.92);
+      transition: all 0.2s ease;
+    }
+
+    .btn-action-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(251, 191, 36, 0.45);
+      color: #fbbf24;
+      transform: scaleY(0.92) translateY(-1px);
+    }
+
+    /* ── VERY LAST LINE: GLOWING CREATOR SIGNATURE ── */
+    .glowing-creator-footer {
+      position: fixed;
+      bottom: max(16px, env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%) translateY(12px);
+      z-index: 35;
+      pointer-events: auto;
+      opacity: 0;
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .glowing-creator-footer.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .glowing-creator-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 24px;
+      background: rgba(12, 16, 26, 0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(251, 191, 36, 0.45);
+      border-radius: 999px;
+      box-shadow: 0 0 24px rgba(251, 191, 36, 0.3), 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 0 12px rgba(251, 191, 36, 0.15);
+      animation: creatorGlowPulse 2.8s infinite ease-in-out;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      cursor: default;
+      user-select: none;
+    }
+
+    .glowing-creator-pill:hover {
+      transform: scale(1.03);
+      border-color: rgba(251, 191, 36, 0.85);
+      box-shadow: 0 0 38px rgba(251, 191, 36, 0.55), inset 0 0 16px rgba(251, 191, 36, 0.25);
+    }
+
+    .glowing-creator-text {
+      font-family: var(--font-wide);
+      font-weight: 800;
+      font-size: clamp(11.5px, 1.15vw, 13.5px);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #fff;
+      background: linear-gradient(135deg, #ffffff 0%, #fef3c7 40%, #fbbf24 75%, #f59e0b 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 14px rgba(251, 191, 36, 0.8), 0 0 28px rgba(245, 158, 11, 0.5);
+      white-space: nowrap;
+      transform: scaleY(0.94);
+    }
+
+    .sparkle-star {
+      color: #fbbf24;
+      font-size: 13px;
+      text-shadow: 0 0 12px #fbbf24, 0 0 22px rgba(251, 191, 36, 0.8);
+      animation: sparkleSpin 4s infinite linear;
+    }
+
+    @keyframes sparkleSpin {
+      0%, 100% { transform: scale(1); opacity: 0.9; }
+      50% { transform: scale(1.25); opacity: 1; filter: brightness(1.3); }
+    }
+
+    @keyframes creatorGlowPulse {
+      0%, 100% {
+        border-color: rgba(251, 191, 36, 0.4);
+        box-shadow: 0 0 20px rgba(251, 191, 36, 0.25), 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 0 10px rgba(251, 191, 36, 0.1);
+      }
+      50% {
+        border-color: rgba(251, 191, 36, 0.8);
+        box-shadow: 0 0 36px rgba(251, 191, 36, 0.5), 0 10px 35px rgba(0, 0, 0, 0.85), inset 0 0 18px rgba(251, 191, 36, 0.25);
+      }
+    }
+
+    /* Inside Card Creator Glow Badge */
+    .card-creator-glow {
+      margin-top: 6px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 14px;
+      background: rgba(251, 191, 36, 0.05);
+      border: 1px solid rgba(251, 191, 36, 0.38);
+      border-radius: 10px;
+      box-shadow: 0 0 18px rgba(251, 191, 36, 0.2), inset 0 0 10px rgba(251, 191, 36, 0.08);
+      animation: creatorGlowPulse 2.8s infinite ease-in-out;
+    }
+
+    .card-creator-glow-text {
+      font-family: var(--font-wide);
+      font-weight: 800;
+      font-size: clamp(10.5px, 0.95vw, 12px);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #fff;
+      background: linear-gradient(135deg, #ffffff 0%, #fef3c7 40%, #fbbf24 75%, #f59e0b 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 12px rgba(251, 191, 36, 0.7);
+      text-align: center;
+      transform: scaleY(0.94);
+    }
+
+    /* ── MODALS (SEARCH, PLANNER, JOURNAL) ── */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-window {
+      background: rgba(12, 16, 26, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), inset 0 0 1px 1px rgba(255, 255, 255, 0.15);
+      width: 100%;
+      max-width: 620px;
+      padding: 28px;
+      position: relative;
+      animation: zoomIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes zoomIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      color: rgba(255, 255, 255, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .modal-close-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    .modal-header {
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-family: var(--font-editorial);
+      font-size: 28px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .modal-subtitle {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.65);
+      margin-top: 4px;
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    .form-input, .form-select {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 10px;
+      padding: 12px 14px;
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-input:focus, .form-select:focus {
+      border-color: #fbbf24;
+      box-shadow: 0 0 10px rgba(251, 191, 36, 0.25);
+    }
+
+    .form-select option {
+      background: #0f1422;
+      color: #fff;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 540px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
+
+    .form-submit-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+      color: #080d1a;
+      font-family: var(--font-wide);
+      font-weight: 800;
+      font-size: 13px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 14px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      margin-top: 8px;
+      transform: scaleY(0.94);
+      transition: all 0.2s ease;
+      box-shadow: 0 6px 18px rgba(251, 191, 36, 0.3);
+    }
+
+    .form-submit-btn:hover {
+      filter: brightness(1.1);
+      transform: scaleY(0.94) translateY(-1px);
+    }
+
+    /* Search Modal Input & Tags */
+    .search-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+    }
+
+    .search-modal-input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 16px;
+      width: 100%;
+    }
+
+    .search-tags {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .search-tag-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      padding: 4px 11px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .search-tag-chip:hover {
+      background: rgba(251, 191, 36, 0.15);
+      color: #fbbf24;
+      border-color: rgba(251, 191, 36, 0.35);
+    }
+
+    .search-results-list {
+      max-height: 280px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .search-res-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .search-res-item:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(251, 191, 36, 0.3);
+    }
+
+    /* Mobile Drawer & Backdrop */
+    .mobile-drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 115;
+      display: none;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .mobile-drawer-backdrop.open {
+      display: block;
+    }
+
+    .mobile-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: min(320px, 86vw);
+      height: 100vh;
+      height: 100dvh;
+      background: rgba(10, 14, 24, 0.98);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border-left: 1px solid rgba(255, 255, 255, 0.12);
+      z-index: 120;
+      padding: max(24px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(24px, env(safe-area-inset-bottom)) 20px;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      box-shadow: -10px 0 40px rgba(0, 0, 0, 0.8);
+    }
+
+    .mobile-drawer.open {
+      transform: translateX(0);
+    }
+  </style>
+</head>
+<body>
+  <div id="viewport"><canvas id="stage"></canvas><div class="cinematic-overlay"></div></div>
+  <div id="scroll-proxy"></div>
+
+  <!-- ── AURA LUXURY EXPEDITIONS TRANSPARENT NAVIGATION HEADER ── -->
+  <header id="aura-header">
+    <div class="header-inner">
+      <!-- Zone 1: Wordmark & Left-Aligned "Begin Your Journey" -->
+      <div class="brand-zone">
+        <a href="#" class="aura-logo" aria-label="Aura Luxury Expeditions">
+          <span class="aura-brand-italic">Aura</span>
+          <span class="aura-brand-bold">Expeditions</span>
+        </a>
+
+        <!-- Left-Aligned Header Title: Begin Your Journey -->
+        <div class="header-journey-wrap">
+          <span class="journey-pipe">|</span>
+          <span class="header-journey-title">BEGIN YOUR JOURNEY</span>
+        </div>
+
+        <!-- Dynamic Live Scene Tracker for Scene 1 & 2 -->
+        <div class="scene-live-pill highlight" id="header-scene-pill">
+          <div class="status-pulse-dot"></div>
+          <span id="header-scene-label">SCENE 01 // STRATOSPHERE</span>
+        </div>
+      </div>
+
+      <!-- Zone 2: Navigation Links -->
+      <nav class="nav-zone">
+        <button type="button" class="nav-btn" id="btn-toggle-dest">
+          <span>Destinations</span>
+          <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+
+        <button type="button" class="nav-btn" id="btn-toggle-exp">
+          <span>Experiences</span>
+          <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+
+        <a href="#story-stage" class="nav-btn" onclick="jumpToFrame(0)">Journeys</a>
+        <button type="button" class="nav-btn" onclick="openJournalModal()">Journal</button>
+        <button type="button" class="nav-btn" onclick="openHeritageModal()">Heritage</button>
+      </nav>
+
+      <!-- Zone 3: Actions (Search, Currency, Planner CTA) -->
+      <div class="actions-zone">
+        <button type="button" class="search-trigger-btn" onclick="openSearchModal()" aria-label="Search travel destinations">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span>Search</span>
+          <span class="kbd-badge">⌘K</span>
+        </button>
+
+        <!-- Currency Selector -->
+        <div class="currency-wrap">
+          <button type="button" class="currency-btn" id="currency-toggle-btn">
+            <span id="active-currency-text">USD ($)</span>
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <div class="currency-menu" id="currency-dropdown">
+            <button type="button" class="currency-option active" onclick="setCurrency('USD')"><span>USD ($)</span><span>1.00</span></button>
+            <button type="button" class="currency-option" onclick="setCurrency('EUR')"><span>EUR (€)</span><span>0.92</span></button>
+            <button type="button" class="currency-option" onclick="setCurrency('GBP')"><span>GBP (£)</span><span>0.78</span></button>
+            <button type="button" class="currency-option" onclick="setCurrency('JPY')"><span>JPY (¥)</span><span>154.5</span></button>
+          </div>
+        </div>
+
+        <!-- Primary CTA Button -->
+        <button type="button" class="cta-plan-btn" onclick="openPlannerModal()">Plan a Journey</button>
+
+        <!-- Mobile Drawer Toggle -->
+        <button type="button" class="mobile-menu-btn" onclick="toggleMobileNav()" aria-label="Open mobile navigation">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── DROPDOWN MEGA MENU: DESTINATIONS ── -->
+    <div class="mega-menu-container" id="mega-destinations">
+      <div class="mega-inner">
+        <div class="mega-tabs">
+          <button type="button" class="mega-tab active" onclick="filterMegaDest('All', this)">All Sanctuaries</button>
+          <button type="button" class="mega-tab" onclick="filterMegaDest('Asia & Pacific', this)">Asia & Pacific</button>
+          <button type="button" class="mega-tab" onclick="filterMegaDest('Europe & Mediterranean', this)">Europe & Mediterranean</button>
+          <button type="button" class="mega-tab" onclick="filterMegaDest('Americas & Polar', this)">Americas & Polar</button>
+          <button type="button" class="mega-tab" onclick="filterMegaDest('Africa & Middle East', this)">Africa & Middle East</button>
+        </div>
+
+        <div class="mega-cards-grid" id="mega-dest-grid">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DROPDOWN MEGA MENU: EXPERIENCES ── -->
+    <div class="mega-menu-container" id="mega-experiences">
+      <div class="mega-inner">
+        <div class="mega-tabs">
+          <button type="button" class="mega-tab active" onclick="filterMegaExp('All', this)">All Experiences</button>
+          <button type="button" class="mega-tab" onclick="filterMegaExp('Cultural', this)">Cultural Retreats</button>
+          <button type="button" class="mega-tab" onclick="filterMegaExp('Expedition', this)">Expeditions</button>
+          <button type="button" class="mega-tab" onclick="filterMegaExp('Coastal', this)">Coastal Charters</button>
+          <button type="button" class="mega-tab" onclick="filterMegaExp('Wildlife', this)">Wildlife Safaris</button>
+        </div>
+
+        <div class="mega-cards-grid" id="mega-exp-grid">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Progress bar & Scroll Indicator -->
+  <div id="progress-line-wrap"><div id="progress-line"></div></div>
+  <div id="scroll-indicator"><div class="mouse-icon"><div class="mouse-wheel"></div></div><span class="indicator-text">Scroll to voyage</span></div>
+
+  <!-- ── DUAL DYNAMIC MOVING TRANSPARENT CARDS (ONE FROM LEFT, ONE FROM RIGHT - CONTINUOUS SCROLL PARALLAX) ── -->
+  <div id="story-stage">
+
+    <!-- ══════ SCENE 1: STRATOSPHERE (Frames 0 - 284) ══════ -->
+    <!-- Opening Standalone Editorial Header: Begin Your Journey (NOT A CARD, LEFT ALIGNED, BIGGER FONT, REMAINS AT START, DISAPPEARS AFTER SCROLL) -->
+    <div class="opening-editorial-header" id="opening-header">
+      <span class="micro-kicker">01 // ASCENT &bull; STRATOSPHERE</span>
+      <h1 class="opening-giant-title">Begin Your Journey</h1>
+      <p class="micro-sub">38,000 FT &bull; PACIFIC TRANSIT CORRIDOR &bull; MACH 0.82</p>
+      <p class="opening-narrative">
+        Welcome to an expedition across the celebrated landscapes and architectural marvels of planet Earth.
+        Ascending through the troposphere, daily turbulence dissolves into a calm, silent expanse of clouds.
+      </p>
+      <div class="stats-row" style="max-width: 440px; margin-top: 4px;">
+        <div class="stat-chip"><div class="stat-val">11,580 M</div><div class="stat-lbl">Altitude</div></div>
+        <div class="stat-chip"><div class="stat-val">880 KM/H</div><div class="stat-lbl">Speed</div></div>
+        <div class="stat-chip"><div class="stat-val">-54&deg;C</div><div class="stat-lbl">Ambient</div></div>
+      </div>
+    </div>
+
+    <!-- Pair 1B: Solar Meridian & Rayleigh Scattering (Frames 146 - 284) -->
+    <article class="story-card-left" id="pair-1b-left">
+      <header class="card-header">
+        <span class="micro-kicker">SOLAR BOUNDARY // HORIZON</span>
+        <h2 class="hero-title">The Golden Meridian</h2>
+        <p class="micro-sub">PERPETUAL TWILIGHT &bull; CLOUD PLATEAUS</p>
+      </header>
+      <section class="card-middle">
+        <p class="card-paragraph">Tracking along the solar meridian keeps the sun suspended in a perpetual golden glow across stratocumulus plains.</p>
+        <p class="card-paragraph">Wind-sculpted cloud plateaus stretch for thousands of kilometers, resembling mountain ranges carved from mist.</p>
+        <div class="stats-row">
+          <div class="stat-chip"><div class="stat-val">Solar Lock</div><div class="stat-lbl">Terminator</div></div>
+          <div class="stat-chip"><div class="stat-val">10,000 KM</div><div class="stat-lbl">Visibility</div></div>
+          <div class="stat-chip"><div class="stat-val">0.0 G</div><div class="stat-lbl">Turbulence</div></div>
+        </div>
+      </section>
+      <footer class="card-footer">
+        <span class="footer-left">&sect; Log 01.2 &bull; Solar Corridor</span>
+        <div class="footer-nav"><span>Descent Primed</span><span>&darr;</span></div>
+      </footer>
+    </article>
+
+    <article class="story-card-right" id="pair-1b-right">
+      <header class="card-header">
+        <span class="micro-kicker">ATMOSPHERIC OPTICS</span>
+        <h2 class="hero-title">Rayleigh Scattering</h2>
+        <p class="micro-sub">PRISMATIC REFRACTION &bull; SPACE VEIL</p>
+      </header>
+      <section class="card-middle">
+        <p class="card-paragraph">High-altitude gas molecules scatter blue frequencies toward space while bathing the aircraft in warm amber wavelengths.</p>
+        <p class="card-paragraph">From here, Earth's atmospheric membrane stands out sharply against the absolute blackness of deep space.</p>
+        <div class="stats-row">
+          <div class="stat-chip"><div class="stat-val">550 NM</div><div class="stat-lbl">Wavelength</div></div>
+          <div class="stat-chip"><div class="stat-val">99.8%</div><div class="stat-lbl">Purity</div></div>
+          <div class="stat-chip"><div class="stat-val">Descent</div><div class="stat-lbl">Initiated</div></div>
+        </div>
+      </section>
+      <footer class="card-footer">
+        <span class="footer-left">&sect; Next Destination: Amazon</span>
+        <div class="footer-nav"><span>South America</span><span>&rarr;</span></div>
+      </footer>
+    </article>
+
+    <!-- ══════ SCENE 2: AMAZON RAINFOREST (Frames 285 - 584) ══════ -->
+    <!-- Pair 2A: The Canopy & Flying Rivers (Frames 285 - 435) -->
+    <article class="story-card-left" id="pair-2a-left">
+      <header class="card-header">
+        <span class="micro-kicker">02 // RAINFOREST BIOME</span>
+        <h2 class="hero-title">The Emerald Canopy</h2>
+        <p class="micro-sub">AMAZON BASIN &bull; NINE SOVEREIGN NATIONS</p>
+      </header>
+      <section class="card-middle">
+        <p class="card-paragraph">We break beneath the cloud ceiling into the Amazon, a living green fortress that spans across nine sovereign nations.</p>
+        <p class="card-paragraph">Over <strong>400 billion trees</strong> pump billions of tons of moisture into the atmosphere, steering global weather cycles.</p>
+        <div class="stats-row">
+          <div class="stat-chip"><div class="stat-val">6.7M KM&sup2;</div><div class="stat-lbl">Basin Area</div></div>
+          <div class="stat-chip"><div class="stat-val">400B+</div><div class="stat-lbl">Tree Count</div></div>
+          <div class="stat-chip"><div class="stat-val">20%</div><div class="stat-lbl">Global O&sup2;</div></div>
+        </div>
+      </section>
+      <footer class="card-footer">
+        <span class="footer-left">&sect; Log 02.1 &bull; South America</span>
+        <div class="footer-nav"><span>Scroll deeper</span><span>&darr;</span></div>
+      </footer>
+    </article>
+
+    <article class="story-card-right" id="pair-2a-right">
+      <header class="card-header">
+        <span class="micro-kicker">HYDROLOGY // CURRENTS</span>
+        <h2 class="hero-title">Flying Rivers</h2>
+        <p class="micro-sub">20 BILLION TONS DAILY VAPOR FLOW</p>
+      </header>
+      <section class="card-middle">
+        <p class="card-paragraph">Vapor transpiring from tree crowns creates immense airborne rivers that carry more water vapor than the Amazon River itself.</p>
+        <p class="card-paragraph">These skyward rivers nourish farmland thousands of miles south, functioning as planet Earth's primary climatic thermostat.</p>
+        <div class="stats-row">
+          <div class="stat-chip"><div class="stat-val">20B Tons</div><div class="stat-lbl">Daily Vapor</div></div>
+          <div class="stat-chip"><div class="stat-val">1,100</div><div class="stat-lbl">Tributaries</div></div>
+          <div class="stat-chip"><div class="stat-val">Equatorial</div><div class="stat-lbl">Climate</div></div>
+        </div>
+      </section>
+      <footer class="card-footer">
+        <span class="footer-left">&sect; Micro-climate: Pure Mist</span>
+        <div class="footer-nav"><span>Explore Sanctuary</span><span>&rarr;</span></div>
+      </footer>
+    </article>
+
+    <!-- Pair 2B: Wildlife & Ancient Medicine (Frames 436 - 584) -->
+    <article class="story-card-left" id="pair-2b-left">
+      <header class="card-header">
+        <span class="micro-kicker">WILDLIFE // SANCTUARY</span>
+        <h2 class="hero-title">Cradle of Ancient Life</h2>
+        <p class="micro-sub">55 MILLION YEARS UNDISTURBED EVOLUTION</p>
+      </header>
+      <section class="card-middle">
+        <p class="card-paragraph">Beneath the dense leaf ceiling lies a layered biological world sheltering one in every ten known species on Earth.</p>
+        <p class="card-paragraph">From elusive jaguars stalking shaded riverbeds to vivid scarlet macaws soaring overhead, life thrives in balance.</p>
+        <div class="stats-row">
+          <div class="stat-chip"><div class="stat-val">2.5M+</div><div class="stat-lbl">Insects</div></div>
+          <div class="stat-chip"><div class="stat-val">40,000</div><div class="stat-lbl">Flora</div></div>
+          <div class="stat-chip"><div class="stat-val">1,300</div><div class="stat-lbl">Birds</div></div>
+        </div>
+      </section>
+      <footer class="card-footer">
+        <span class="footer-left">&sect; Log 02.2 &bull; Biome Complete</span>
+        <div class="footer-nav"><span>Next: Paris, France</span><span>&darr;</span></div>
+      </footer>
+    </article>
+
+    <article class="story-card-right" id="pair-2b-right">
+      <header class="card-header">
+        <span class="micro-kicker">NATURAL HERITAGE</span>
+        <h2 class="hero-title">Living Pharmacopeia</h2>
+        <p class="micro-sub">70% OF CANCER MEDICINES ROOTED IN TROPICS</p>
+      </header>
+      <section class="card-middle">
+        <p class="card-paragraph">Over 70% of plants with recognized anti-cancer properties originate in tropical canopies, safeguarded by indigenous guardians.</p>
+        <p class="card-paragraph">Our course now crosses the Atlantic Ocean, transitioning from primeval wilderness to historic European architecture.</p>
+        <div class="stats-row">
+          <div class="stat-chip"><div class="stat-val">40,000</div><div class="stat-lbl">Plant Types</div></div>
+          <div class="stat-chip"><div class="stat-val">Zero Loss</div><div class="stat-lbl">Custody</div></div>
+          <div class="stat-chip"><div class="stat-val">Eastbound</div><div class="stat-lbl">Heading</div></div>
+        </div>
+      </section>
+      <footer class="card-footer">
+        <span class="footer-left">&sect; Trans-Atlantic Sector</span>
+        <div class="footer-nav"><span>Europe Inbound</span><span>&rarr;</span></div>
+      </footer>
+    </article>
+
+    <!-- ══════ SCENE 3: EIFFEL TOWER & PARIS (Frames 585 - 884) ══════ -->
+    <!-- Pair 3A: The Iron Lady & Thermal Lattice (Frames 585 - 735) -->
+    <article class="story-card-left" id="pair-3a-left">
+      <header class="card-header">
+        <span class="micro-kicker">03 // ARCHITECTURE &bull; PARIS</span>
+        <h2 class="hero-title">The Iron Lady</h2>
+        <p class="micro-sub">CHAMP DE MARS &bull; PARIS &bull; INAUGURATED 1889</p>
+      </header>
+      <section class="card-middle">
+        <p class="card-paragraph">Approaching Europe, we align with the Champ de Mars to encounter the most recognized silhouette on Earth.</p>
+        <p class="card-paragraph">Soaring <strong>330 meters high</strong>, the Eiffel Tower was forged from 18,038 pieces of puddle iron and 2.5 million rivets.</p>
+        <div class="stats-row">
+          <div class="stat-chip"><div class="stat-val">330 M</div><div class="stat-lbl">Height</div></div>
+          <div class="stat-chip"><div class="stat-val">10,100 T</div><div class="stat-lbl">Weight</div></div>
+          <div class="stat-chip"><div class="stat-val">1889</div><div class="stat-lbl">Completed</div></div>
+        </div>
+      </section>
+      <footer class="card-footer">
+        <span class="footer-left">&sect; Log 03.1 &bull; Parisian Heritage</span>
+        <div class="footer-nav"><span>Orbit Monument</span><span>&darr;</span></div>
+      </footer>
+    </article>
+
+    <article class="story-card-right" id="pair-3a-right">
+      <header class="card-header">
+        <span class="micro-kicker">STRUCTURAL DYNAMICS</span>
+        <h2 class="hero-title">Thermal Lattice</h2>
+        <p class="micro-sub">15 CM SEASONAL EXPANSION DYNAMICS</p>
+      </header>
+      <section class="card-middle">
+        <p class="card-paragraph">Puddle-iron thermal joints dynamically accommodate up to 15 centimeters of seasonal expansion without structural stress.</p>
+        <p class="card-paragraph">Eiffel's wind resistance formula proved that open lattice structures could withstand Atlantic gale-force winds with ease.</p>
+        <div class="stats-row">
+          <div class="stat-chip"><div class="stat-val">15 CM</div><div class="stat-lbl">Thermal Flex</div></div>
+          <div class="stat-chip"><div class="stat-val">2.5M</div><div class="stat-lbl">Rivets</div></div>
+          <div class="stat-chip"><div class="stat-val">Puddle Iron</div><div class="stat-lbl">Alloy</div></div>
+        </div>
+      </section>
+      <footer class="card-footer">
+        <span class="footer-left">&sect; Mathematical Marvel</span>
+        <div class="footer-nav"><span>City Perspectives</span><span>&rarr;</span></div>
+      </footer>
+    </article>
+
+    <!-- Pair 3B: Paris Skyline & Cultural Heritage (Frames 736 - 884) -->
+    <article class="story-card-left" id="pair-3b-left">
+      <header class="card-header">
+        <span class="micro-kicker">URBAN PERSPECTIVE</span>
+        <h2 class="hero-title">The City of Light</h2>
+        <p class="micro-sub">RIVER SEINE &bull; NEOCLASSICAL RADIAL AVENUES</p>
+      </header>
+      <section class="card-middle">
+        <p class="card-paragraph">Circling the upper arches reveals the geometric symmetry of Baron Haussmann's grand 19th-century radial boulevards.</p>
+        <p class="card-paragraph">Limestone facades and slate mansard roofs fan outward toward the Seine, the Louvre, and the Arc de Triomphe.</p>
+        <div class="stats-row">
+          <div class="stat-chip"><div class="stat-val">7 Million</div><div class="stat-lbl">Visitors / Yr</div></div>
+          <div class="stat-chip"><div class="stat-val">1,665</div><div class="stat-lbl">Steps</div></div>
+          <div class="stat-chip"><div class="stat-val">UNESCO</div><div class="stat-lbl">World Site</div></div>
+        </div>
+      </section>
+      <footer class="card-footer">
+        <span class="footer-left">&sect; Log 03.2 &bull; European Sector</span>
+        <div class="footer-nav"><span>Next: Agra, India</span><span>&darr;</span></div>
+      </footer>
+    </article>
+
+    <article class="story-card-right" id="pair-3b-right">
+      <header class="card-header">
+        <span class="micro-kicker">CULTURAL LEGACY</span>
+        <h2 class="hero-title">Philosophy & Art</h2>
+        <p class="micro-sub">CENTURIES OF ENLIGHTENMENT & CRAFT</p>
+      </header>
+      <section class="card-middle">
+        <p class="card-paragraph">For centuries, Paris has served as humanity's grand salon for philosophy, impressionist art, couture fashion, and culinary craft.</p>
+        <p class="card-paragraph">Our journey now turns southeast across the Eurasian continent toward the northern plains of Mughal India.</p>
+        <div class="stats-row">
+          <div class="stat-chip"><div class="stat-val">12</div><div class="stat-lbl">Radial Roads</div></div>
+          <div class="stat-chip"><div class="stat-val">Limestone</div><div class="stat-lbl">Facades</div></div>
+          <div class="stat-chip"><div class="stat-val">Eastbound</div><div class="stat-lbl">Course</div></div>
+        </div>
+      </section>
+      <footer class="card-footer">
+        <span class="footer-left">&sect; Transit: Eurasian Corridor</span>
+        <div class="footer-nav"><span>Mughal Empire</span><span>&rarr;</span></div>
+      </footer>
+    </article>
+
+    <!-- ══════ SCENE 4: TAJ MAHAL & AGRA (Frames 885 - 1184) ══════ -->
+    <!-- Pair 4A: Marble Elegy & Craftsmanship (Frames 885 - 1035) -->
+    <article class="story-card-left" id="pair-4a-left">
+      <header class="card-header">
+        <span class="micro-kicker">04 // MUGHAL SPLENDOR</span>
+        <h2 class="hero-title">An Elegy in Marble</h2>
+        <p class="micro-sub">YAMUNA RIVERBANK &bull; AGRA &bull; COMMENCED 1632</p>
+      </header>
+      <section class="card-middle">
+        <p class="card-paragraph">We touch down visually along the banks of the Yamuna River, where the Taj Mahal glows in early morning illumination.</p>
+        <p class="card-paragraph">Commissioned in 1632 by Emperor <strong>Shah Jahan</strong> for Mumtaz Mahal, it remains an eternal testament of devotion.</p>
+        <div class="stats-row">
+          <div class="stat-chip"><div class="stat-val">1632&ndash;53</div><div class="stat-lbl">Period</div></div>
+          <div class="stat-chip"><div class="stat-val">20,000</div><div class="stat-lbl">Artisans</div></div>
+          <div class="stat-chip"><div class="stat-val">Makrana</div><div class="stat-lbl">Pure Stone</div></div>
+        </div>
+      </section>
+      <footer class="card-footer">
+        <span class="footer-left">&sect; Log 04.1 &bull; Mughal Splendor</span>
+        <div class="footer-nav"><span>Reflecting Waters</span><span>&darr;</span></div>
+      </footer>
+    </article>
+
+    <article class="story-card-right" id="pair-4a-right">
+      <header class="card-header">
+        <span class="micro-kicker">PRECISION INLAY</span>
+        <h2 class="hero-title">Pietra Dura Art</h2>
+        <p class="micro-sub">28 VARIETIES OF SEMI-PRECIOUS GEMSTONES</p>
+      </header>
+      <section class="card-middle">
+        <p class="card-paragraph">Intricate pietra dura inlays of lapis lazuli, jade, carnelian, and turquoise form flowing floral arabesques across the arches.</p>
+        <p class="card-paragraph">The four outlying minarets lean outward by precisely two degrees, shielding the central dome in any seismic occurrence.</p>
+        <div class="stats-row">
+          <div class="stat-chip"><div class="stat-val">73 M</div><div class="stat-lbl">Dome Height</div></div>
+          <div class="stat-chip"><div class="stat-val">28 Types</div><div class="stat-lbl">Inlaid Gems</div></div>
+          <div class="stat-chip"><div class="stat-val">2&deg; Outward</div><div class="stat-lbl">Minaret Tilt</div></div>
+        </div>
+      </section>
+      <footer class="card-footer">
+        <span class="footer-left">&sect; Architectural Symmetry</span>
+        <div class="footer-nav"><span>Charbagh Gardens</span><span>&rarr;</span></div>
+      </footer>
+    </article>
+
+    <!-- Pair 4B: Pool of Paradise & Crystalline Light (Frames 1036 - 1184) -->
+    <article class="story-card-left" id="pair-4b-left">
+      <header class="card-header">
+        <span class="micro-kicker">GEOMETRY // REFLECTION</span>
+        <h2 class="hero-title">Pool of Paradise</h2>
+        <p class="micro-sub">CHARBAGH GARDENS &bull; PERFECT BILATERAL BALANCE</p>
+      </header>
+      <section class="card-middle">
+        <p class="card-paragraph">The central reflecting pool doubles the grand dome and minarets in serene, undisturbed aquatic symmetry.</p>
+        <p class="card-paragraph">Every proportion reflects sacred geometric harmony, designed so that both halves mirror one another with precision.</p>
+        <div class="stats-row">
+          <div class="stat-chip"><div class="stat-val">100%</div><div class="stat-lbl">Bilateral</div></div>
+          <div class="stat-chip"><div class="stat-val">Charbagh</div><div class="stat-lbl">4 Rivers</div></div>
+          <div class="stat-chip"><div class="stat-val">Yamuna</div><div class="stat-lbl">River Bank</div></div>
+        </div>
+      </section>
+      <footer class="card-footer">
+        <span class="footer-left">&sect; Log 04.2 &bull; Asia Sector</span>
+        <div class="footer-nav"><span>Next: Pacific Coast</span><span>&darr;</span></div>
+      </footer>
+    </article>
+
+    <article class="story-card-right" id="pair-4b-right">
+      <header class="card-header">
+        <span class="micro-kicker">OPTICAL LUMINESCENCE</span>
+        <h2 class="hero-title">Chameleon Marble</h2>
+        <p class="micro-sub">TRANSLUCENT MAKRAKA REFLECTING SKY TONES</p>
+      </header>
+      <section class="card-middle">
+        <p class="card-paragraph">Pure Makrana crystalline marble absorbs shifting sky tones: glowing soft rose at dawn, brilliant pearl at noon, amber at dusk.</p>
+        <p class="card-paragraph">Our course now proceeds toward our final destination—the wild collision of continental rock and boundless ocean.</p>
+        <div class="stats-row">
+          <div class="stat-chip"><div class="stat-val">Dawn</div><div class="stat-lbl">Soft Rose</div></div>
+          <div class="stat-chip"><div class="stat-val">Midday</div><div class="stat-lbl">Pearl White</div></div>
+          <div class="stat-chip"><div class="stat-val">Twilight</div><div class="stat-lbl">Gold Amber</div></div>
+        </div>
+      </section>
+      <footer class="card-footer">
+        <span class="footer-left">&sect; Final Sector Primed</span>
+        <div class="footer-nav"><span>Oceanic Horizon</span><span>&rarr;</span></div>
+      </footer>
+    </article>
+
+    <!-- ══════ SCENE 5: COASTLINE & OCEAN (Frames 1185 - 1485) ══════ -->
+    <!-- Pair 5A: Where Land Meets Sea (Frames 1185 - 1335) -->
+    <article class="story-card-left" id="pair-5a-left">
+      <header class="card-header">
+        <span class="micro-kicker">05 // COASTLINE</span>
+        <h2 class="hero-title">Where Land Meets Sea</h2>
+        <p class="micro-sub">CONTINENTAL CRAGS &bull; PACIFIC SWELLS</p>
+      </header>
+      <section class="card-middle">
+        <p class="card-paragraph">Our expedition approaches the edge of the landmass, where emerald headlands drop dramatically into churning ocean surf.</p>
+        <p class="card-paragraph">Sculpted over millions of years by Pacific tides, rugged cliffs shelter golden beaches untouched by modern development.</p>
+        <div class="stats-row">
+          <div class="stat-chip"><div class="stat-val">361M KM&sup2;</div><div class="stat-lbl">Ocean Area</div></div>
+          <div class="stat-chip"><div class="stat-val">71%</div><div class="stat-lbl">Coverage</div></div>
+          <div class="stat-chip"><div class="stat-val">1.33B KM&sup3;</div><div class="stat-lbl">Water Mass</div></div>
+        </div>
+      </section>
+      <footer class="card-footer">
+        <span class="footer-left">&sect; Log 05.1 &bull; Oceanic Frontier</span>
+        <div class="footer-nav"><span>Scroll to finale</span><span>&darr;</span></div>
+      </footer>
+    </article>
+
+    <article class="story-card-right" id="pair-5a-right">
+      <header class="card-header">
+        <span class="micro-kicker">HYDROLOGY // TIDAL POWER</span>
+        <h2 class="hero-title">The Endless Tide</h2>
+        <p class="micro-sub">6,000 NAUTICAL MILES SWELL PROPAGATION</p>
+      </header>
+      <section class="card-middle">
+        <p class="card-paragraph">Deep-water Pacific swells travel across entire hemispheres before cresting upon ancient granite boulders.</p>
+        <p class="card-paragraph">Watching turquoise waves reminds us of the endless, timeless power that sustains all life across our living world.</p>
+        <div class="stats-row">
+          <div class="stat-chip"><div class="stat-val">6,000 NM</div><div class="stat-lbl">Swell Range</div></div>
+          <div class="stat-chip"><div class="stat-val">Deep Sea</div><div class="stat-lbl">Upwelling</div></div>
+          <div class="stat-chip"><div class="stat-val">Pelagic</div><div class="stat-lbl">Ecosystem</div></div>
+        </div>
+      </section>
+      <footer class="card-footer">
+        <span class="footer-left">&sect; Pacific Frontier</span>
+        <div class="footer-nav"><span>Grand Finale Ahead</span><span>&rarr;</span></div>
+      </footer>
+    </article>
+
+    <!-- Pair 5B: EXPEDITION FINALE & BOOKING (Frames 1336 - 1485) -->
+    <!-- Left Card: Left-Aligned Editorial Header: BEGIN YOUR JOURNEY + Curated Sanctuaries -->
+    <article class="story-card-left" id="pair-5b-left">
+      <header class="card-header">
+        <span class="micro-kicker">EXPEDITION FINALE // CHAPTER 05</span>
+        <h2 class="massive-wide-title">Begin Your Journey</h2>
+        <p class="micro-sub">FIVE CONTINENTS &bull; PRIVATE AVIATION &bull; BESPOKE SANCTUARIES</p>
+      </header>
+      <section class="card-middle">
+        <p class="card-paragraph">You have traveled across 1,485 high-definition cinematic frames. Now let your personal voyage take flight.</p>
+
+        <!-- Curated Destination Booking Teasers -->
+        <div class="mini-dest-list">
+          <div class="mini-dest-item" onclick="openPlannerWithDest('kyoto')">
+            <div>
+              <div style="font-family: var(--font-editorial); font-size: 16px; font-weight: 600; color: #fff;">Kyoto & Nara &bull; Japan</div>
+              <div style="font-size: 10px; color: rgba(255,255,255,0.6);">7 Days &bull; Cultural Cloister</div>
+            </div>
+            <div style="text-align: right;">
+              <span class="price-tag" data-usd="5400">$5,400</span>
+              <div style="font-size: 9px; color: #fbbf24; font-family: var(--font-mono);">Reserve &rarr;</div>
+            </div>
+          </div>
+
+          <div class="mini-dest-item" onclick="openPlannerWithDest('amalfi')">
+            <div>
+              <div style="font-family: var(--font-editorial); font-size: 16px; font-weight: 600; color: #fff;">Amalfi & Capri &bull; Italy</div>
+              <div style="font-size: 10px; color: rgba(255,255,255,0.6);">8 Days &bull; Riva Vintage Yacht</div>
+            </div>
+            <div style="text-align: right;">
+              <span class="price-tag" data-usd="6800">$6,800</span>
+              <div style="font-size: 9px; color: #fbbf24; font-family: var(--font-mono);">Reserve &rarr;</div>
+            </div>
+          </div>
+
+          <div class="mini-dest-item" onclick="openPlannerWithDest('patagonia')">
+            <div>
+              <div style="font-family: var(--font-editorial); font-size: 16px; font-weight: 600; color: #fff;">Torres del Paine &bull; Chile</div>
+              <div style="font-size: 10px; color: rgba(255,255,255,0.6);">10 Days &bull; Glacial Heli-Trek</div>
+            </div>
+            <div style="text-align: right;">
+              <span class="price-tag" data-usd="7900">$7,900</span>
+              <div style="font-size: 9px; color: #fbbf24; font-family: var(--font-mono);">Reserve &rarr;</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="left-action-bar">
+          <button type="button" class="btn-action-primary" onclick="openPlannerModal()">Plan Your Expedition</button>
+          <button type="button" class="btn-action-secondary" onclick="toggleMenu('destinations')">All Sanctuaries</button>
+        </div>
+      </section>
+      <footer class="card-footer" style="flex-direction: column; align-items: stretch; gap: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <span class="footer-left">&sect; Private Aviation Dispatch</span>
+          <div class="footer-nav"><span>Aura Bespoke</span></div>
+        </div>
+        <div class="card-creator-glow">
+          <span class="sparkle-star">&#10022;</span>
+          <span class="card-creator-glow-text">Created by Aditya Devraj Pathak from Jabalpur</span>
+          <span class="sparkle-star">&#10022;</span>
+        </div>
+      </footer>
+    </article>
+
+    <!-- Right Card: VIP Flight Operations & Telemetry -->
+    <article class="story-card-right" id="pair-5b-right">
+      <header class="card-header">
+        <span class="micro-kicker">AURA FLIGHT DESK</span>
+        <h2 class="hero-title">Private Air Fleet</h2>
+        <p class="micro-sub">GLOBAL AIR DIRECTORY &bull; 24/7 VIP CONCIERGE</p>
+      </header>
+      <section class="card-middle">
+        <p class="card-paragraph">Point-to-point direct airstrip routing with zero commercial terminal friction. Hand-selected veteran naturalist guides.</p>
+        <p class="card-paragraph">Every expedition is 100% carbon-neutral with direct funding allocated to local biodiversity and historical monuments.</p>
+        <div class="stats-row">
+          <div class="stat-chip"><div class="stat-val">5</div><div class="stat-lbl">Chapters</div></div>
+          <div class="stat-chip"><div class="stat-val">1,485</div><div class="stat-lbl">Frames</div></div>
+          <div class="stat-chip"><div class="stat-val">24/7</div><div class="stat-lbl">VIP Desk</div></div>
+        </div>
+        <div class="left-action-bar" style="margin-top: 6px;">
+          <button type="button" class="btn-action-secondary" style="width: 100%; justify-content: center;" onclick="openSearchModal()">Quick Search Directory (⌘K)</button>
+        </div>
+      </section>
+      <footer class="card-footer" style="flex-direction: column; align-items: stretch; gap: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <span class="footer-left">&sect; Status: 1,485 Frames Rendered</span>
+          <div class="footer-nav"><span>Scroll up to revisit</span><span>&uarr;</span></div>
+        </div>
+        <div class="card-creator-glow">
+          <span class="sparkle-star">&#10022;</span>
+          <span class="card-creator-glow-text">Created by Aditya Devraj Pathak from Jabalpur</span>
+          <span class="sparkle-star">&#10022;</span>
+        </div>
+      </footer>
+    </article>
+
+  </div>
+
+  <!-- ── VERY LAST LINE: GLOWING CREATOR SIGNATURE BADGE ── -->
+  <div class="glowing-creator-footer" id="glowing-creator-footer">
+    <div class="glowing-creator-pill">
+      <span class="sparkle-star">&#10022;</span>
+      <span class="glowing-creator-text">Created by Aditya Devraj Pathak from Jabalpur</span>
+      <span class="sparkle-star">&#10022;</span>
+    </div>
+  </div>
+
+  <!-- ── MODAL: TRIP PLANNER ── -->
+  <div class="modal-backdrop" id="modal-planner" onclick="handleBackdropClick(event, 'modal-planner')">
+    <div class="modal-window">
+      <button type="button" class="modal-close-btn" onclick="closeModal('modal-planner')">&times;</button>
+      <div class="modal-header">
+        <div style="font-family: var(--font-mono); font-size: 11px; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 4px;">Bespoke Travel Inquiry</div>
+        <h3 class="modal-title">Design Your Journey</h3>
+        <p class="modal-subtitle">Our expedition directors coordinate private flights, vetted naturalists, and secluded architectural residences.</p>
+      </div>
+
+      <div id="planner-form-wrap">
+        <form id="planner-form" onsubmit="submitPlanner(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input type="text" id="plan-name" class="form-input" placeholder="e.g. Eleanor Vance" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" id="plan-email" class="form-input" placeholder="eleanor@domain.com" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Desired Sanctuary</label>
+            <select id="plan-dest" class="form-select">
+              <option value="kyoto">Kyoto & Nara &bull; Japan ($5,400)</option>
+              <option value="amalfi">Amalfi & Capri &bull; Italy ($6,800)</option>
+              <option value="patagonia">Torres del Paine &bull; Chile ($7,900)</option>
+              <option value="serengeti">Serengeti &bull; Tanzania ($8,500)</option>
+              <option value="dolomites">Dolomiti Bellunesi &bull; Italy ($4,900)</option>
+              <option value="raja-ampat">Raja Ampat &bull; Indonesia ($9,200)</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Travelers</label>
+              <input type="number" id="plan-travelers" class="form-input" value="2" min="1" max="16" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Season</label>
+              <select id="plan-season" class="form-select">
+                <option>Autumn (Sep – Nov)</option>
+                <option>Spring (Mar – May)</option>
+                <option>Summer (Jun – Aug)</option>
+                <option>Winter (Dec – Feb)</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="form-submit-btn">Request Private Itinerary</button>
+        </form>
+      </div>
+
+      <div id="planner-confirmation" style="display: none; text-align: center; padding: 24px 0;">
+        <div style="width: 54px; height: 54px; border-radius: 50%; background: rgba(251, 191, 36, 0.15); border: 1px solid rgba(251, 191, 36, 0.4); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; color: #fbbf24;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <h3 class="modal-title" style="font-size: 24px;">Expedition Request Confirmed</h3>
+        <p class="modal-subtitle" style="margin-top: 8px;" id="conf-text">Thank you. Your inquiry reference has been generated.</p>
+        <div style="font-family: var(--font-mono); font-size: 15px; font-weight: 700; color: #fbbf24; margin-top: 14px; background: rgba(255,255,255,0.04); padding: 8px 16px; border-radius: 8px; display: inline-block;" id="conf-code">
+          AUR-829104
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL: SEARCH (⌘K) ── -->
+  <div class="modal-backdrop" id="modal-search" onclick="handleBackdropClick(event, 'modal-search')">
+    <div class="modal-window">
+      <button type="button" class="modal-close-btn" onclick="closeModal('modal-search')">&times;</button>
+      <div class="modal-header">
+        <div style="font-family: var(--font-mono); font-size: 11px; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 4px;">Instant Expedition Directory</div>
+        <h3 class="modal-title">Search Destinations</h3>
+      </div>
+
+      <div class="search-input-wrap">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" id="search-input" class="search-modal-input" placeholder="Type destination, country, or category (e.g., Japan, Italy, Glacier)..." oninput="handleSearch(this.value)" />
+      </div>
+
+      <div class="search-tags">
+        <span style="font-size: 10px; font-family: var(--font-mono); color: rgba(255,255,255,0.5);">Popular:</span>
+        <span class="search-tag-chip" onclick="setSearchQuery('Kyoto')">Kyoto</span>
+        <span class="search-tag-chip" onclick="setSearchQuery('Amalfi')">Amalfi Coast</span>
+        <span class="search-tag-chip" onclick="setSearchQuery('Patagonia')">Patagonia</span>
+        <span class="search-tag-chip" onclick="setSearchQuery('Serengeti')">Serengeti</span>
+        <span class="search-tag-chip" onclick="setSearchQuery('Dolomites')">Dolomites</span>
+      </div>
+
+      <div class="search-results-list" id="search-results">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL: JOURNAL & HERITAGE ── -->
+  <div class="modal-backdrop" id="modal-info" onclick="handleBackdropClick(event, 'modal-info')">
+    <div class="modal-window">
+      <button type="button" class="modal-close-btn" onclick="closeModal('modal-info')">&times;</button>
+      <div class="modal-header">
+        <div style="font-family: var(--font-mono); font-size: 11px; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: 4px;" id="info-kicker">Field Journal</div>
+        <h3 class="modal-title" id="info-title">Aura Dispatch</h3>
+        <p class="modal-subtitle" id="info-desc">Field dispatches written by veteran navigators and conservation biologists.</p>
+      </div>
+      <div style="font-size: 13.5px; line-height: 1.65; color: rgba(255,255,255,0.85); display: flex; flex-direction: column; gap: 12px;" id="info-body">
+        <p>Aura Expeditions was founded with an uncompromised vision: to provide travelers with seamless, private aerial access to the world’s most profound natural sanctuaries and architectural masterpieces.</p>
+        <p>From custom trans-Pacific flight coordinates to high-altitude mountain refugios and private coastal Riva cruisers, every itinerary operates with zero carbon offsets and verified local conservation partnerships.</p>
+      </div>
+      <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
+        <button type="button" class="cta-plan-btn" onclick="closeModal('modal-info'); openPlannerModal();">Start Your Itinerary</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MOBILE NAV DRAWER & BACKDROP ── -->
+  <div class="mobile-drawer-backdrop" id="mobile-drawer-backdrop" onclick="toggleMobileNav()"></div>
+  <div class="mobile-drawer" id="mobile-drawer">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <div class="aura-logo">
+        <span class="aura-brand-italic">Aura</span>
+        <span class="aura-brand-bold">Expeditions</span>
+      </div>
+      <button type="button" class="modal-close-btn" onclick="toggleMobileNav()" style="position: static;">&times;</button>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
+      <button type="button" class="nav-btn" onclick="toggleMobileNav(); toggleMenu('destinations');">Destinations</button>
+      <button type="button" class="nav-btn" onclick="toggleMobileNav(); toggleMenu('experiences');">Experiences</button>
+      <a href="#story-stage" class="nav-btn" onclick="toggleMobileNav(); jumpToFrame(0);">Journeys</a>
+      <button type="button" class="nav-btn" onclick="toggleMobileNav(); openJournalModal();">Journal</button>
+      <button type="button" class="nav-btn" onclick="toggleMobileNav(); openHeritageModal();">Heritage</button>
+    </div>
+
+    <div style="margin-top: auto; display: flex; flex-direction: column; gap: 10px;">
+      <button type="button" class="cta-plan-btn" style="width: 100%; text-align: center;" onclick="toggleMobileNav(); openPlannerModal();">Plan a Journey</button>
+      <button type="button" class="search-trigger-btn" style="width: 100%; justify-content: center;" onclick="toggleMobileNav(); openSearchModal();">Search Expeditions</button>
+    </div>
+  </div>
+
+  <!-- ── APPLICATION JAVASCRIPT LOGIC ── -->
+  <script>
+    /* ── 1. DESTINATIONS & EXPERIENCES DATA ── */
+    const DESTINATIONS = [
+      {
+        id: 'kyoto',
+        name: 'Kyoto & Nara',
+        country: 'Japan',
+        region: 'Asia & Pacific',
+        tagline: 'Centuries of Zen gardens, temple pavilions, and private tea rites',
+        season: 'Mar–May & Oct–Nov',
+        priceUSD: 5400,
+        category: 'Cultural'
+      },
+      {
+        id: 'amalfi',
+        name: 'Amalfi & Capri',
+        country: 'Italy',
+        region: 'Europe & Mediterranean',
+        tagline: 'Terraced pastel cliffs, secluded private coves, and vintage coastal sailing',
+        season: 'May–Sep',
+        priceUSD: 6800,
+        category: 'Coastal'
+      },
+      {
+        id: 'patagonia',
+        name: 'Torres del Paine',
+        country: 'Chile',
+        region: 'Americas & Polar',
+        tagline: 'Granite spires, pristine glacial fjords, and untamed sub-Antarctic wilderness',
+        season: 'Nov–Mar',
+        priceUSD: 7900,
+        category: 'Expedition'
+      },
+      {
+        id: 'serengeti',
+        name: 'Serengeti & Ngorongoro',
+        country: 'Tanzania',
+        region: 'Africa & Middle East',
+        tagline: 'The Great Migration, golden savanna dawn flights, and luxury tented eco-camps',
+        season: 'Jun–Oct',
+        priceUSD: 8500,
+        category: 'Wildlife'
+      },
+      {
+        id: 'dolomites',
+        name: 'Dolomiti Bellunesi',
+        country: 'Italy',
+        region: 'Europe & Mediterranean',
+        tagline: 'Limestone pinnacles, private high-alpine refugios, and via ferrata passes',
+        season: 'Jun–Oct',
+        priceUSD: 4900,
+        category: 'Alpine'
+      },
+      {
+        id: 'raja-ampat',
+        name: 'Raja Ampat Archipelago',
+        country: 'Indonesia',
+        region: 'Asia & Pacific',
+        tagline: 'The planet’s richest coral reefs, private schooner charter, and limestone islets',
+        season: 'Oct–Apr',
+        priceUSD: 9200,
+        category: 'Expedition'
+      }
+    ];
+
+    const EXPERIENCES = [
+      {
+        id: 'exp-1',
+        title: 'Kyoto Imperial Tea & Zen Master Retreat',
+        subtitle: 'Private cloister ceremonies closed to public visitors',
+        duration: '7 Days',
+        category: 'Cultural',
+        location: 'Kyoto, Japan',
+        priceUSD: 5800
+      },
+      {
+        id: 'exp-2',
+        title: 'Patagonia Fjords & Glacial Heli-Trek',
+        subtitle: 'High-altitude mountaineering and remote wilderness lodge',
+        duration: '10 Days',
+        category: 'Expedition',
+        location: 'Torres del Paine, Chile',
+        priceUSD: 8200
+      },
+      {
+        id: 'exp-3',
+        title: 'Amalfi Coastline Riva Vintage Charter',
+        subtitle: 'Capri, Positano, and Ischia private maritime navigation',
+        duration: '8 Days',
+        category: 'Coastal',
+        location: 'Campania, Italy',
+        priceUSD: 7400
+      },
+      {
+        id: 'exp-4',
+        title: 'Serengeti Private Concession Safari',
+        subtitle: 'Off-road dawn tracking with veteran naturalists',
+        duration: '9 Days',
+        category: 'Wildlife',
+        location: 'Serengeti, Tanzania',
+        priceUSD: 9100
+      }
+    ];
+
+    const CURRENCIES = {
+      USD: { symbol: '$', rate: 1.0 },
+      EUR: { symbol: '€', rate: 0.92 },
+      GBP: { symbol: '£', rate: 0.78 },
+      JPY: { symbol: '¥', rate: 154.5 }
+    };
+    let activeCurrency = 'USD';
+
+    function formatPrice(amountUSD) {
+      const c = CURRENCIES[activeCurrency];
+      const val = Math.round(amountUSD * c.rate);
+      return `${c.symbol}${val.toLocaleString()}`;
+    }
+
+    function setCurrency(code) {
+      activeCurrency = code;
+      document.getElementById('active-currency-text').textContent = `${code} (${CURRENCIES[code].symbol})`;
+      document.getElementById('currency-dropdown').classList.remove('open');
+
+      document.querySelectorAll('.currency-option').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.includes(code));
+      });
+
+      document.querySelectorAll('.price-tag').forEach(tag => {
+        const usd = parseFloat(tag.getAttribute('data-usd'));
+        if (!isNaN(usd)) {
+          tag.textContent = formatPrice(usd);
+        }
+      });
+
+      renderMegaDestGrid('All');
+      renderMegaExpGrid('All');
+    }
+
+    // Toggle currency dropdown
+    document.getElementById('currency-toggle-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById('currency-dropdown').classList.toggle('open');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.currency-wrap')) {
+        document.getElementById('currency-dropdown').classList.remove('open');
+      }
+    });
+
+    /* ── 2. MEGA MENUS LOGIC ── */
+    const megaDest = document.getElementById('mega-destinations');
+    const megaExp = document.getElementById('mega-experiences');
+    const btnDest = document.getElementById('btn-toggle-dest');
+    const btnExp = document.getElementById('btn-toggle-exp');
+
+    function toggleMenu(menu) {
+      if (menu === 'destinations') {
+        const isOpen = megaDest.classList.contains('open');
+        megaDest.classList.toggle('open', !isOpen);
+        btnDest.classList.toggle('active', !isOpen);
+        megaExp.classList.remove('open');
+        btnExp.classList.remove('active');
+        if (!isOpen) renderMegaDestGrid('All');
+      } else if (menu === 'experiences') {
+        const isOpen = megaExp.classList.contains('open');
+        megaExp.classList.toggle('open', !isOpen);
+        btnExp.classList.toggle('active', !isOpen);
+        megaDest.classList.remove('open');
+        btnDest.classList.remove('active');
+        if (!isOpen) renderMegaExpGrid('All');
+      }
+    }
+
+    btnDest.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu('destinations'); });
+    btnExp.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu('experiences'); });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#aura-header')) {
+        megaDest.classList.remove('open');
+        megaExp.classList.remove('open');
+        btnDest.classList.remove('active');
+        btnExp.classList.remove('active');
+      }
+    });
+
+    function renderMegaDestGrid(region) {
+      const container = document.getElementById('mega-dest-grid');
+      const filtered = region === 'All' ? DESTINATIONS : DESTINATIONS.filter(d => d.region === region);
+      container.innerHTML = filtered.map(d => `
+        <div class="mega-dest-card" onclick="openPlannerWithDest('${d.id}')">
+          <div>
+            <div class="mega-card-header">
+              <span>${d.country} &bull; ${d.region}</span>
+              <span>${d.category}</span>
+            </div>
+            <h4 class="mega-card-title">${d.name}</h4>
+            <p class="mega-card-desc">${d.tagline}</p>
+          </div>
+          <div class="mega-card-footer">
+            <span class="price-tag" data-usd="${d.priceUSD}">${formatPrice(d.priceUSD)}</span>
+            <span style="font-size: 11px; color: #fbbf24; font-family: var(--font-mono);">Inquire &rarr;</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterMegaDest(region, tab) {
+      document.querySelectorAll('#mega-destinations .mega-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      renderMegaDestGrid(region);
+    }
+
+    function renderMegaExpGrid(category) {
+      const container = document.getElementById('mega-exp-grid');
+      const filtered = category === 'All' ? EXPERIENCES : EXPERIENCES.filter(e => e.category === category);
+      container.innerHTML = filtered.map(e => `
+        <div class="mega-dest-card" onclick="openPlannerWithDest('kyoto')">
+          <div>
+            <div class="mega-card-header">
+              <span>${e.location}</span>
+              <span>${e.duration}</span>
+            </div>
+            <h4 class="mega-card-title" style="font-size: 18px;">${e.title}</h4>
+            <p class="mega-card-desc">${e.subtitle}</p>
+          </div>
+          <div class="mega-card-footer">
+            <span class="price-tag" data-usd="${e.priceUSD}">${formatPrice(e.priceUSD)}</span>
+            <span style="font-size: 11px; color: #fbbf24; font-family: var(--font-mono);">Reserve &rarr;</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterMegaExp(category, tab) {
+      document.querySelectorAll('#mega-experiences .mega-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      renderMegaExpGrid(category);
+    }
+
+    /* ── 3. MODALS LOGIC ── */
+    function openPlannerModal(preselectedDestId) {
+      if (preselectedDestId) {
+        document.getElementById('plan-dest').value = preselectedDestId;
+      }
+      document.getElementById('planner-form-wrap').style.display = 'block';
+      document.getElementById('planner-confirmation').style.display = 'none';
+      document.getElementById('modal-planner').classList.add('open');
+      megaDest.classList.remove('open');
+      megaExp.classList.remove('open');
+    }
+
+    function openPlannerWithDest(destId) {
+      openPlannerModal(destId);
+    }
+
+    function submitPlanner(e) {
+      e.preventDefault();
+      const name = document.getElementById('plan-name').value;
+      const destSelect = document.getElementById('plan-dest');
+      const destText = destSelect.options[destSelect.selectedIndex].text;
+      const refCode = 'AUR-' + Math.floor(100000 + Math.random() * 900000);
+
+      document.getElementById('conf-text').innerHTML = `Thank you, <strong>${name}</strong>. A dedicated expedition director has received your inquiry for <strong>${destText}</strong>.`;
+      document.getElementById('conf-code').textContent = refCode;
+      document.getElementById('planner-form-wrap').style.display = 'none';
+      document.getElementById('planner-confirmation').style.display = 'block';
+    }
+
+    function openSearchModal() {
+      document.getElementById('modal-search').classList.add('open');
+      const input = document.getElementById('search-input');
+      setTimeout(() => input.focus(), 100);
+      handleSearch('');
+    }
+
+    function handleSearch(query) {
+      const q = query.trim().toLowerCase();
+      const container = document.getElementById('search-results');
+      const filtered = DESTINATIONS.filter(d =>
+        !q || d.name.toLowerCase().includes(q) || d.country.toLowerCase().includes(q) || d.category.toLowerCase().includes(q)
+      );
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align: center; padding: 20px; font-size: 13px; color: rgba(255,255,255,0.5);">No sanctuaries matching "${query}".</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(d => `
+        <div class="search-res-item" onclick="closeModal('modal-search'); openPlannerWithDest('${d.id}');">
+          <div>
+            <div style="font-family: var(--font-editorial); font-size: 18px; font-weight: 600; color: #fff;">${d.name}</div>
+            <div style="font-size: 11px; color: rgba(255,255,255,0.6);">${d.country} &bull; ${d.category} &bull; ${d.season}</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="price-tag" data-usd="${d.priceUSD}">${formatPrice(d.priceUSD)}</div>
+            <div style="font-size: 10px; color: #fbbf24; font-family: var(--font-mono);">Inquire</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function setSearchQuery(tag) {
+      const input = document.getElementById('search-input');
+      input.value = tag;
+      handleSearch(tag);
+    }
+
+    function openJournalModal() {
+      document.getElementById('info-kicker').textContent = 'Field Journal';
+      document.getElementById('info-title').textContent = 'Stratospheric & Biome Observations';
+      document.getElementById('info-desc').textContent = 'Dispatches logged during trans-continental aerial navigation.';
+      document.getElementById('info-body').innerHTML = `
+        <p><strong>Log Entry 01 // Trans-Pacific Corridor</strong>: Above the tropospheric cloud layer, light refraction creates an unbroken golden line along the solar meridian. Atmospheric drag falls to negligible coefficients, allowing supersonic glide performance with zero vibration.</p>
+        <p><strong>Log Entry 02 // Amazon Basin Descent</strong>: Transpiration from the 400-billion-tree canopy forms immense vapor currents—known to climatologists as flying rivers—producing a micro-climate of pure, oxygen-saturated mist that nurtures 10% of Earth's species.</p>
+      `;
+      document.getElementById('modal-info').classList.add('open');
+    }
+
+    function openHeritageModal() {
+      document.getElementById('info-kicker').textContent = 'Heritage & Philosophy';
+      document.getElementById('info-title').textContent = 'The Art of Planetary Exploration';
+      document.getElementById('info-desc').textContent = 'Dedicated to timeless expeditions with pristine aesthetic discretion.';
+      document.getElementById('info-body').innerHTML = `
+        <p>Aura Luxury Expeditions was conceived to honor Earth’s greatest achievements in nature and human architecture. We believe travel should be silent, deeply restorative, and visually transcendent.</p>
+        <p>Every journey partners with indigenous custodians, botanical reserves, and historic monument preservation societies to ensure our presence protects the wonders we behold.</p>
+      `;
+      document.getElementById('modal-info').classList.add('open');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    function handleBackdropClick(e, id) {
+      if (e.target.id === id) {
+        closeModal(id);
+      }
+    }
+
+    function toggleMobileNav() {
+      const drawer = document.getElementById('mobile-drawer');
+      const backdrop = document.getElementById('mobile-drawer-backdrop');
+      const isOpen = drawer.classList.contains('open');
+      drawer.classList.toggle('open', !isOpen);
+      if (backdrop) backdrop.classList.toggle('open', !isOpen);
+    }
+
+    // Global Keyboard Shortcuts (⌘K / Ctrl+K and Escape)
+    window.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        openSearchModal();
+      }
+      if (e.key === 'Escape') {
+        closeModal('modal-planner');
+        closeModal('modal-search');
+        closeModal('modal-info');
+        megaDest.classList.remove('open');
+        megaExp.classList.remove('open');
+        document.getElementById('currency-dropdown').classList.remove('open');
+        document.getElementById('mobile-drawer').classList.remove('open');
+        const backdrop = document.getElementById('mobile-drawer-backdrop');
+        if (backdrop) backdrop.classList.remove('open');
+      }
+    });
+
+    /* ── 4. CONTINUOUS SCROLL PARALLAX SYSTEM (DUAL LEFT & RIGHT MOVING CARDS) ── */
+    const cardPairs = [
+      { start: 146,  end: 284,  leftId: 'pair-1b-left', rightId: 'pair-1b-right', scene: 'SCENE 01 // GOLDEN MERIDIAN', highlight: true },
+      { start: 285,  end: 435,  leftId: 'pair-2a-left', rightId: 'pair-2a-right', scene: 'SCENE 02 // AMAZON CANOPY', highlight: true },
+      { start: 436,  end: 584,  leftId: 'pair-2b-left', rightId: 'pair-2b-right', scene: 'SCENE 02 // ANCIENT SANCTUARY', highlight: true },
+      { start: 585,  end: 735,  leftId: 'pair-3a-left', rightId: 'pair-3a-right', scene: 'SCENE 03 // EIFFEL TOWER', highlight: false },
+      { start: 736,  end: 884,  leftId: 'pair-3b-left', rightId: 'pair-3b-right', scene: 'SCENE 03 // PARIS SKYLINE', highlight: false },
+      { start: 885,  end: 1035, leftId: 'pair-4a-left', rightId: 'pair-4a-right', scene: 'SCENE 04 // TAJ MAHAL', highlight: false },
+      { start: 1036, end: 1184, leftId: 'pair-4b-left', rightId: 'pair-4b-right', scene: 'SCENE 04 // CHARBAGH REFLECTIONS', highlight: false },
+      { start: 1185, end: 1335, leftId: 'pair-5a-left', rightId: 'pair-5a-right', scene: 'SCENE 05 // PACIFIC COASTLINE', highlight: false },
+      { start: 1336, end: 1485, leftId: 'pair-5b-left', rightId: 'pair-5b-right', scene: 'EXPEDITION FINALE', highlight: true }
+    ];
+
+    cardPairs.forEach(p => {
+      p.leftEl = document.getElementById(p.leftId);
+      p.rightEl = document.getElementById(p.rightId);
+    });
+
+    function updateDualMovingCards(currentIdx) {
+      let activeScene = 'SCENE 01 // STRATOSPHERE';
+      let isHighlight = true;
+
+      // Device-adaptive parallax calculations
+      const isMobile = window.innerWidth <= 768;
+      const isTablet = window.innerWidth > 768 && window.innerWidth <= 1080;
+      
+      const stdTravelY = isMobile ? 22 : (isTablet ? 48 : 75);
+      const stdTravelX = isMobile ? 16 : (isTablet ? 35 : 55);
+      const openTravelY = isMobile ? 24 : (isTablet ? 48 : 75);
+      const openTravelX = isMobile ? 14 : (isTablet ? 30 : 45);
+      const finTravelY = isMobile ? 18 : (isTablet ? 32 : 45);
+      const finTravelX = isMobile ? 16 : (isTablet ? 35 : 55);
+
+      // 1. Opening Standalone Editorial Header ("Begin Your Journey", Left-Aligned, Bigger Font, Fades upon scroll)
+      const openingHeader = document.getElementById('opening-header');
+      if (openingHeader) {
+        if (currentIdx <= 150) {
+          const prog = currentIdx / 140;
+          const op = Math.max(0, 1 - Math.pow(prog, 1.5));
+          const translateY = -prog * openTravelY;
+          const translateX = -prog * openTravelX;
+          openingHeader.style.display = 'flex';
+          openingHeader.style.opacity = op;
+          openingHeader.style.transform = `translate3d(${translateX}px, calc(-50% + ${translateY}px), 0)`;
+          openingHeader.style.pointerEvents = op > 0.3 ? 'auto' : 'none';
+        } else {
+          openingHeader.style.opacity = 0;
+          openingHeader.style.display = 'none';
+          openingHeader.style.pointerEvents = 'none';
+        }
+      }
+
+      // 2. Loop through all dual moving card pairs
+      for (let i = 0; i < cardPairs.length; i++) {
+        const pair = cardPairs[i];
+        const isLastPair = (i === cardPairs.length - 1);
+
+        // Special handling for the last part: BOTH CARDS WILL NOT DISAPPEAR & GLOWING CREATOR BADGE REVEAL!
+        if (isLastPair) {
+          const creatorFooter = document.getElementById('glowing-creator-footer');
+          if (currentIdx >= pair.start) {
+            // Once in the finale range, glide into position and STAY PERMANENTLY VISIBLE!
+            const prog = Math.min(Math.max((currentIdx - pair.start) / 80, 0), 1);
+            const op = prog;
+            const translateY = (1 - prog) * finTravelY;
+
+            if (pair.leftEl) {
+              const leftX = (1 - prog) * -finTravelX;
+              pair.leftEl.style.display = 'flex';
+              pair.leftEl.style.opacity = op;
+              pair.leftEl.style.transform = `translate3d(${leftX}px, calc(-50% + ${translateY}px), 0) scale(1)`;
+              pair.leftEl.style.pointerEvents = 'auto';
+            }
+            if (pair.rightEl) {
+              const rightX = (1 - prog) * finTravelX;
+              pair.rightEl.style.display = 'flex';
+              pair.rightEl.style.opacity = op;
+              pair.rightEl.style.transform = `translate3d(${rightX}px, calc(-50% + ${translateY}px), 0) scale(1)`;
+              pair.rightEl.style.pointerEvents = 'auto';
+            }
+            if (creatorFooter) creatorFooter.classList.add('visible');
+            activeScene = pair.scene;
+            isHighlight = true;
+          } else {
+            if (pair.leftEl) { pair.leftEl.style.display = 'none'; pair.leftEl.style.opacity = 0; }
+            if (pair.rightEl) { pair.rightEl.style.display = 'none'; pair.rightEl.style.opacity = 0; }
+            if (creatorFooter) creatorFooter.classList.remove('visible');
+          }
+          continue;
+        }
+
+        // Standard moving pairs (continuous scroll parallax without sticking)
+        const mid = (pair.start + pair.end) / 2;
+        const halfSpan = (pair.end - pair.start) / 2;
+        const d = (currentIdx - mid) / halfSpan;
+
+        if (Math.abs(d) < 1.15) {
+          if (Math.abs(d) < 0.5) {
+            activeScene = pair.scene;
+            isHighlight = pair.highlight;
+          }
+
+          const op = Math.max(0, 1 - Math.pow(d / 1.05, 2));
+          const translateY = -d * stdTravelY;
+          const scale = 0.96 + 0.04 * op;
+
+          if (pair.leftEl) {
+            const leftX = (1 - op) * -stdTravelX;
+            pair.leftEl.style.display = 'flex';
+            pair.leftEl.style.opacity = op;
+            pair.leftEl.style.transform = `translate3d(${leftX}px, calc(-50% + ${translateY}px), 0) scale(${scale})`;
+            pair.leftEl.style.pointerEvents = op > 0.4 ? 'auto' : 'none';
+          }
+
+          if (pair.rightEl) {
+            const rightX = (1 - op) * stdTravelX;
+            pair.rightEl.style.display = 'flex';
+            pair.rightEl.style.opacity = op;
+            pair.rightEl.style.transform = `translate3d(${rightX}px, calc(-50% + ${translateY}px), 0) scale(${scale})`;
+            pair.rightEl.style.pointerEvents = op > 0.4 ? 'auto' : 'none';
+          }
+        } else {
+          if (pair.leftEl) {
+            pair.leftEl.style.opacity = 0;
+            pair.leftEl.style.pointerEvents = 'none';
+            pair.leftEl.style.display = 'none';
+          }
+          if (pair.rightEl) {
+            pair.rightEl.style.opacity = 0;
+            pair.rightEl.style.pointerEvents = 'none';
+            pair.rightEl.style.display = 'none';
+          }
+        }
+      }
+
+      headerSceneLabel.textContent = activeScene;
+      headerScenePill.classList.toggle('highlight', isHighlight);
+    }
+
+    /* ── 5. CANVAS CINEMATIC SCROLL ENGINE (1,485 FRAMES) ── */
+    const SCENE1_FRAMES = 285;
+    const SCENE2_FRAMES = 300;
+    const SCENE3_FRAMES = 300;
+    const SCENE4_FRAMES = 300;
+    const SCENE5_FRAMES = 300;
+    const TOTAL_FRAMES = SCENE1_FRAMES + SCENE2_FRAMES + SCENE3_FRAMES + SCENE4_FRAMES + SCENE5_FRAMES; // 1,485 frames
+
+    const canvas = document.getElementById('stage');
+    const ctx = canvas.getContext('2d', { alpha: false });
+    const progressLine = document.getElementById('progress-line');
+    const scrollIndicator = document.getElementById('scroll-indicator');
+    const headerScenePill = document.getElementById('header-scene-pill');
+    const headerSceneLabel = document.getElementById('header-scene-label');
+
+    const frameUrls = new Array(TOTAL_FRAMES);
+    for (let i = 0; i < SCENE1_FRAMES; i++) {
+      frameUrls[i] = `./ezgif-frames/ezgif-frame-${String(i + 1).padStart(3, '0')}.jpg`;
+    }
+    for (let i = 0; i < SCENE2_FRAMES; i++) {
+      frameUrls[SCENE1_FRAMES + i] = `./ezgif-frames-2/ezgif-frame-${String(i + 1).padStart(3, '0')}.jpg`;
+    }
+    for (let i = 0; i < SCENE3_FRAMES; i++) {
+      frameUrls[SCENE1_FRAMES + SCENE2_FRAMES + i] = `./ezgif-frames-3/ezgif-frame-${String(i + 1).padStart(3, '0')}.jpg`;
+    }
+    for (let i = 0; i < SCENE4_FRAMES; i++) {
+      frameUrls[SCENE1_FRAMES + SCENE2_FRAMES + SCENE3_FRAMES + i] = `./ezgif-frames-4/ezgif-frame-${String(i + 1).padStart(3, '0')}.jpg`;
+    }
+    for (let i = 0; i < SCENE5_FRAMES; i++) {
+      frameUrls[SCENE1_FRAMES + SCENE2_FRAMES + SCENE3_FRAMES + SCENE4_FRAMES + i] = `./ezgif-frames-5/ezgif-frame-${String(i + 1).padStart(3, '0')}.jpg`;
+    }
+
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+
+      // Dynamically tune scroll proxy travel so swipes feel natural and comfortable on mobile, tablets, and laptops
+      const isMobile = window.innerWidth <= 768;
+      const isTablet = window.innerWidth > 768 && window.innerWidth <= 1080;
+      const scrollProxy = document.getElementById('scroll-proxy');
+      if (scrollProxy) {
+        if (isMobile) {
+          scrollProxy.style.height = 'calc(100dvh + 13000px)';
+        } else if (isTablet) {
+          scrollProxy.style.height = 'calc(100vh + 18000px)';
+        } else {
+          scrollProxy.style.height = 'calc(100vh + 24000px)';
+        }
+      }
+
+      renderFrame(currentFrame);
+    }
+    window.addEventListener('resize', resize);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(resize, 120);
+    });
+
+    const images = new Array(TOTAL_FRAMES);
+    for (let i = 0; i < TOTAL_FRAMES; i++) {
+      const img = new Image();
+      img.src = frameUrls[i];
+      images[i] = img;
+    }
+
+    let lastDrawnIndex = -1;
+    function drawImageCover(img) {
+      if (!img || !img.complete || img.naturalWidth === 0) return false;
+      const cw = canvas.width;
+      const ch = canvas.height;
+      const iw = img.naturalWidth;
+      const ih = img.naturalHeight;
+      const scale = Math.max(cw / iw, ch / ih);
+      const dw = iw * scale;
+      const dh = ih * scale;
+      const dx = (cw - dw) / 2;
+      const dy = (ch - dh) / 2;
+      ctx.drawImage(img, dx, dy, dw, dh);
+      return true;
+    }
+
+    function renderFrame(index) {
+      index = Math.min(Math.max(Math.round(index), 0), TOTAL_FRAMES - 1);
+      let img = images[index];
+
+      if (drawImageCover(img)) {
+        lastDrawnIndex = index;
+      } else if (lastDrawnIndex >= 0) {
+        drawImageCover(images[lastDrawnIndex]);
+      }
+
+      const pct = (index / (TOTAL_FRAMES - 1)) * 100;
+      progressLine.style.width = pct + '%';
+      updateDualMovingCards(index);
+    }
+
+    let targetFrame = 0;
+    let currentFrame = 0;
+    const LERP_FACTOR = 0.12;
+
+    function loop() {
+      currentFrame += (targetFrame - currentFrame) * LERP_FACTOR;
+      if (Math.abs(targetFrame - currentFrame) < 0.01) {
+        currentFrame = targetFrame;
+      }
+      renderFrame(currentFrame);
+      requestAnimationFrame(loop);
+    }
+
+    function onScroll() {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      if (maxScroll > 0) {
+        const ratio = Math.min(Math.max(window.scrollY / maxScroll, 0), 1);
+        targetFrame = ratio * (TOTAL_FRAMES - 1);
+      }
+      if (window.scrollY > 30) {
+        scrollIndicator.classList.add('hidden');
+      }
+    }
+
+    function jumpToFrame(frameIndex) {
+      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+      const targetRatio = frameIndex / (TOTAL_FRAMES - 1);
+      window.scrollTo({ top: targetRatio * maxScroll, behavior: 'smooth' });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('wheel', () => {
+      if (window.scrollY > 10) scrollIndicator.classList.add('hidden');
+    }, { passive: true });
+
+    resize();
+    images[0].onload = () => renderFrame(0);
+    renderFrame(0);
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "name": "Aura Luxury Expeditions - Professional Travel Navigation",
+  "description": "High-end responsive navigation header for a luxury travel website featuring destination megamenus, curated journey discovery, search overlay, and custom itinerary planner.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
